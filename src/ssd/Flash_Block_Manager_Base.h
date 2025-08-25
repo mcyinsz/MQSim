@@ -71,9 +71,16 @@ namespace SSD_Components
 		friend class GC_and_WL_Unit_Page_Level;
 		friend class GC_and_WL_Unit_Base;
 	public:
-		Flash_Block_Manager_Base(GC_and_WL_Unit_Base* gc_and_wl_unit, unsigned int max_allowed_block_erase_count, unsigned int total_concurrent_streams_no,
-			unsigned int channel_count, unsigned int chip_no_per_channel, unsigned int die_no_per_chip, unsigned int plane_no_per_die,
-			unsigned int block_no_per_plane, unsigned int page_no_per_block);
+		Flash_Block_Manager_Base(GC_and_WL_Unit_Base* gc_and_wl_unit,
+			bool fdp_enabled,
+			unsigned int max_allowed_block_erase_count,
+			unsigned int total_concurrent_streams_no,
+			unsigned int channel_count,
+			unsigned int chip_no_per_channel,
+			unsigned int die_no_per_chip,
+			unsigned int plane_no_per_die,
+			unsigned int block_no_per_plane,
+			unsigned int page_no_per_block);
 		virtual ~Flash_Block_Manager_Base();
 		virtual void Allocate_block_and_page_in_plane_for_user_write(const stream_id_type streamID, NVM::FlashMemory::Physical_Page_Address& address) = 0;
 		virtual void Allocate_block_and_page_in_plane_for_gc_write(const stream_id_type streamID, NVM::FlashMemory::Physical_Page_Address& address) = 0;
@@ -99,6 +106,10 @@ namespace SSD_Components
 	protected:
 		PlaneBookKeepingType ****plane_manager;//Keeps track of plane block usage information
 		GC_and_WL_Unit_Base *gc_and_wl_unit;
+		bool fdp_enabled;
+		unsigned int NRG = 1; //Number of Reclaim Groups used for FDP
+		unsigned int NRUH = 10; //Number of Reclaim Unit Handles used for FDP
+		unsigned int MAXPIDS = 9; //Max Placement Identifier used for FDP
 		unsigned int max_allowed_block_erase_count;
 		unsigned int total_concurrent_streams_no;
 		unsigned int channel_count;

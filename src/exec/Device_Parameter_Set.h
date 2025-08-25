@@ -18,6 +18,7 @@ class Device_Parameter_Set : public Parameter_Set_Base
 public:
 	static int Seed;//Seed for random number generation (used in device's random number generators)
 	static bool Enabled_Preconditioning;
+	static bool Enabled_FDP;
 	static NVM::NVM_Type Memory_Type;
 	static HostInterface_Types HostInterface_Type;
 	static uint16_t IO_Queue_Depth;//For NVMe, it determines the size of the submission/completion queues; for SATA, it determines the size of NCQ_Control_Structure

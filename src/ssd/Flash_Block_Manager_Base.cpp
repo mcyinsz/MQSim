@@ -4,13 +4,32 @@
 namespace SSD_Components
 {
 	unsigned int Block_Pool_Slot_Type::Page_vector_size = 0;
-	Flash_Block_Manager_Base::Flash_Block_Manager_Base(GC_and_WL_Unit_Base* gc_and_wl_unit, unsigned int max_allowed_block_erase_count, unsigned int total_concurrent_streams_no,
-		unsigned int channel_count, unsigned int chip_no_per_channel, unsigned int die_no_per_chip, unsigned int plane_no_per_die,
-		unsigned int block_no_per_plane, unsigned int page_no_per_block)
-		: gc_and_wl_unit(gc_and_wl_unit), max_allowed_block_erase_count(max_allowed_block_erase_count), total_concurrent_streams_no(total_concurrent_streams_no),
-		channel_count(channel_count), chip_no_per_channel(chip_no_per_channel), die_no_per_chip(die_no_per_chip), plane_no_per_die(plane_no_per_die),
-		block_no_per_plane(block_no_per_plane), pages_no_per_block(page_no_per_block)
+	Flash_Block_Manager_Base::Flash_Block_Manager_Base(GC_and_WL_Unit_Base* gc_and_wl_unit,
+		bool fdp_enabled,
+		unsigned int max_allowed_block_erase_count,
+		unsigned int total_concurrent_streams_no,
+		unsigned int channel_count,
+		unsigned int chip_no_per_channel,
+		unsigned int die_no_per_chip,
+		unsigned int plane_no_per_die,
+		unsigned int block_no_per_plane,
+		unsigned int page_no_per_block)
+		: gc_and_wl_unit(gc_and_wl_unit),
+		fdp_enabled(fdp_enabled),
+		max_allowed_block_erase_count(max_allowed_block_erase_count),
+		total_concurrent_streams_no(total_concurrent_streams_no),
+		channel_count(channel_count),
+		chip_no_per_channel(chip_no_per_channel),
+		die_no_per_chip(die_no_per_chip),
+		plane_no_per_die(plane_no_per_die),
+		block_no_per_plane(block_no_per_plane),
+		pages_no_per_block(page_no_per_block)
 	{
+		if(fdp_enabled)
+		{
+			PRINT_MESSAGE("FDP is enabled! Please note that the maximum number of streams is adjusted to support based on NRG and NRUH");
+			total_concurrent_streams_no = NRG * NRUH;
+		}
 		plane_manager = new PlaneBookKeepingType***[channel_count];
 		for (unsigned int channelID = 0; channelID < channel_count; channelID++) {
 			plane_manager[channelID] = new PlaneBookKeepingType**[chip_no_per_channel];

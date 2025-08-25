@@ -39,12 +39,29 @@ namespace SSD_Components
 	{
 	public:
 		GC_and_WL_Unit_Base(const sim_object_id_type& id, 
-			Address_Mapping_Unit_Base* address_mapping_unit, Flash_Block_Manager_Base* block_manager, TSU_Base* tsu, NVM_PHY_ONFI* flash_controller,
-			GC_Block_Selection_Policy_Type block_selection_policy, double gc_threshold,	bool preemptible_gc_enabled, double gc_hard_threshold,
-			unsigned int channel_count, unsigned int chip_no_per_channel, unsigned int die_no_per_chip, unsigned int plane_no_per_die,
-			unsigned int block_no_per_plane, unsigned int page_no_per_block, unsigned int sector_no_per_page,
-			bool use_copyback, double rho, unsigned int max_ongoing_gc_reqs_per_plane,
-			bool dynamic_wearleveling_enabled, bool static_wearleveling_enabled, unsigned int static_wearleveling_threshold, int seed);
+			Address_Mapping_Unit_Base* address_mapping_unit,
+			Flash_Block_Manager_Base* block_manager,
+			TSU_Base* tsu,
+			NVM_PHY_ONFI* flash_controller,
+			GC_Block_Selection_Policy_Type block_selection_policy,
+			double gc_threshold,
+			bool preemptible_gc_enabled,
+			double gc_hard_threshold,
+			unsigned int channel_count,
+			unsigned int chip_no_per_channel,
+			unsigned int die_no_per_chip,
+			unsigned int plane_no_per_die,
+			unsigned int block_no_per_plane,
+			unsigned int page_no_per_block,
+			unsigned int sector_no_per_page,
+			bool use_copyback,
+			double rho,
+			unsigned int max_ongoing_gc_reqs_per_plane,
+			bool fdp_enabled,
+			bool dynamic_wearleveling_enabled,
+			bool static_wearleveling_enabled,
+			unsigned int static_wearleveling_threshold,
+			int seed);
 		void Setup_triggers();
 		void Start_simulation();
 		void Validate_simulation_config();
@@ -76,6 +93,7 @@ namespace SSD_Components
 		bool dynamic_wearleveling_enabled;
 		bool static_wearleveling_enabled;
 		unsigned int static_wearleveling_threshold;
+		bool fdp_enabled;
 
 		//Used to implement: "Preemptible I/O Scheduling of Garbage Collection for Solid State Drives", TCAD 2013.
 		bool preemptible_gc_enabled;
