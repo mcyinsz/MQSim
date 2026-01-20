@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<MQSim_IO_Scenarios>
+	<IO_Scenario>
+		<IO_Flow_Parameter_Set_Synthetic>
+			<Priority_Class>URGENT</Priority_Class>
+			<Enabled_Preconditioning>true</Enabled_Preconditioning>
+			<Device_Level_Data_Caching_Mode>WRITE_CACHE</Device_Level_Data_Caching_Mode>
+			
+			<!-- Channel IDs: 0-31 -->
+			<Channel_IDs>0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31</Channel_IDs>
+			
+			<!-- Chip IDs: 0 -->
+			<Chip_IDs>0</Chip_IDs>
+			
+			<!-- Die IDs: 0-7 -->
+			<Die_IDs>0,1,2,3,4,5,6,7</Die_IDs>
+			
+			<!-- Plane IDs: 0-75 (必须全部列出，不能省略) -->
+			<Plane_IDs>0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75</Plane_IDs>
+			
+			<Initial_Occupancy_Percentage>10</Initial_Occupancy_Percentage>
+			<Working_Set_Percentage>100</Working_Set_Percentage>
+			
+			<Synthetic_Generator_Type>QUEUE_DEPTH</Synthetic_Generator_Type>
+			<!-- 建议设大一点，例如 4096 或 65535 以跑满带宽 -->
+			<Average_No_of_Reqs_in_Queue>16384</Average_No_of_Reqs_in_Queue>
+			
+			<!-- 100% 读 -->
+			<Read_Percentage>100</Read_Percentage>
+			<!-- 顺序流 -->
+			<Address_Distribution>RANDOM_UNIFORM</Address_Distribution>
+			<Percentage_of_Hot_Region>0</Percentage_of_Hot_Region>
+			
+			<Generated_Aligned_Addresses>true</Generated_Aligned_Addresses>
+			<Address_Alignment_Unit>16</Address_Alignment_Unit>
+			
+			<!-- 请求大小 128KB (256 sectors) -->
+			<Request_Size_Distribution>FIXED</Request_Size_Distribution>
+			<Average_Request_Size>8</Average_Request_Size>
+			<Variance_Request_Size>0</Variance_Request_Size>
+			
+			<Seed>123</Seed>
+			<Stop_Time>0</Stop_Time>
+			<!-- 读取 10GB 数据 (10GB / 128KB = 81920) -->
+			<Total_Requests_To_Generate>1048576</Total_Requests_To_Generate>
+
+		</IO_Flow_Parameter_Set_Synthetic>
+	</IO_Scenario>
+</MQSim_IO_Scenarios>
