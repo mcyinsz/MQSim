@@ -276,8 +276,47 @@ if __name__ == "__main__":
         for size_log in range(12, 24)
     }
 
+    STREAMING_READ_SCENARIO_SCAN_QD = {
+        f"seq_read_total_size_{2**(23-10)}MB_{qd}QD": {
+            "Read_Percentage": 100,
+            "Average_Request_Size": 256,  # 1sector = 512B
+            "Average_No_of_Reqs_in_Queue": qd,
+            "Total_Requests_To_Generate": 2**23//128,
+            "Address_Distribution": "STREAMING",
 
-    scenarios = RANDOM_READ_SCENARIO_8KBREQ
+        }
+
+        for qd in range(1, 512, 16)
+    }
+
+    STREAMING_READ_SCENARIO_SCAN_QD_LOW_RANGE = {
+        f"seq_read_total_size_{2**(23-10)}MB_{qd}QD": {
+            "Read_Percentage": 100,
+            "Average_Request_Size": 256,  # 1sector = 512B
+            "Average_No_of_Reqs_in_Queue": qd,
+            "Total_Requests_To_Generate": 2**23//128,
+            "Address_Distribution": "STREAMING",
+
+        }
+
+        for qd in range(1, 17)
+    }
+
+    STREAMING_READ_SCENARIO_SCAN_QD_SMALL_REQ = {
+        f"seq_read_total_size_{2**(23-10)}MB_{qd}QD_small": {
+            "Read_Percentage": 100,
+            "Average_Request_Size": 16,  # 1sector = 512B
+            "Average_No_of_Reqs_in_Queue": qd,
+            "Total_Requests_To_Generate": 2**23//8,
+            "Address_Distribution": "STREAMING",
+
+        }
+
+        for qd in range(1, 512, 16)
+    }
+
+
+    scenarios = STREAMING_READ_SCENARIO_SCAN_QD_LOW_RANGE
 
     # 2. 初始化并运行
     # max_workers=4 表示同时跑4个仿真，根据你的CPU核心数调整

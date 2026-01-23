@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<MQSim_IO_Scenarios>
+	<IO_Scenario>
+		<IO_Flow_Parameter_Set_Trace_Based>
+			<Priority_Class>HIGH</Priority_Class>
+			<!-- 针对读负载，开启读缓存或关闭 -->
+			<Device_Level_Data_Caching_Mode>READ_CACHE</Device_Level_Data_Caching_Mode>
+			
+			<!-- 资源分配：假设SSD有8通道, 4芯片, 2叠层, 2平面，全部分配以获得最高性能 -->
+			<Channel_IDs>0,1,2,3,4,5,6,7</Channel_IDs>
+			<Chip_IDs>0,1,2,3</Chip_IDs>
+			<Die_IDs>0,1</Die_IDs>
+			<Plane_IDs>0,1</Plane_IDs>
+			
+			<!-- 预填充：模拟SSD已经使用了50%的状态 -->
+			<Initial_Occupancy_Percentage>50</Initial_Occupancy_Percentage>
+			
+			<!-- Trace文件路径 -->
+			<File_Path>HBF_workspace/sequential_trace.trace</File_Path>
+			
+			<Percentage_To_Be_Executed>100</Percentage_To_Be_Executed>
+			<Relay_Count>1</Relay_Count>
+			<Time_Unit>NANOSECOND</Time_Unit>
+		</IO_Flow_Parameter_Set_Trace_Based>
+	</IO_Scenario>
+</MQSim_IO_Scenarios>
