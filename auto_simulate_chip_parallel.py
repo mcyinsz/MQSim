@@ -6,17 +6,14 @@ import xml.etree.ElementTree as ET
 import glob
 import time
 from typing import Dict, List, Any
-import matplotlib.pyplot as plt
-import re
 
 # ================= 配置区域 =================
 # MQSim 可执行文件的路径 (请修改为你的实际路径)
 MQSIM_EXEC_PATH = "./MQSim" 
 # 硬件配置文件的路径 (请修改为你的实际路径)
-HW_CONFIG_PATH = "./HBF_workspace/hbfconfig.xml" 
+HW_CONFIG_PATH = "./HBF_workspace/hbfconfig_chip_parallel.xml" 
 # 临时工作目录的根路径，用于存放并行跑的中间文件
-TEMP_WORKSPACE_ROOT = "./temp_sim_workspace/temp_symthesis_sim_workspace"
-PLOTS_SAVE_DIR = "./workload_plots"
+TEMP_WORKSPACE_ROOT = "./temp_sim_workspace/temp_symthesis_chip_parallel_sim_workspace"
 # ===========================================
 
 def generate_workload_xml(filepath: str, params: Dict[str, Any]):
@@ -25,14 +22,15 @@ def generate_workload_xml(filepath: str, params: Dict[str, Any]):
     如果 params 中缺少某些字段，则使用下面的默认值。
     """
     # 默认的长 ID 列表，直接复制自你的示例
-    default_channel_ids = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31"
-    default_die_ids = "0,1,2,3,4,5,6,7"
-    default_plane_ids = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75"
+    default_chip_ids = "2,3,4,5,6,7,8,9,10,75" #"0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75"
+    default_channel_ids = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31" #"0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31"
+    default_die_ids = "0"
+    default_plane_ids = "0"
 
     # 填充数据
     p = {
         "Channel_IDs": params.get("Channel_IDs", default_channel_ids),
-        "Chip_IDs": params.get("Chip_IDs", "0"),
+        "Chip_IDs": params.get("Chip_IDs", default_chip_ids),
         "Die_IDs": params.get("Die_IDs", default_die_ids),
         "Plane_IDs": params.get("Plane_IDs", default_plane_ids),
         "Initial_Occupancy_Percentage": params.get("Initial_Occupancy_Percentage", 10),
@@ -176,7 +174,7 @@ def worker_task(args):
         return case_name, {"Error": str(e)}
     finally:
         # 可选：运行完后清理临时文件
-        shutil.rmtree(run_dir) 
+        # shutil.rmtree(run_dir) 
         pass
 
 class MQSimAutomator:
@@ -207,105 +205,6 @@ class MQSimAutomator:
         print("[*] All simulations completed.")
         return results
 
-# ================= 新增：画图功能 =================
-def extract_sort_key(case_name):
-    """
-    尝试从文件名中提取数字用于排序。
-    优先匹配 'QD' 前的数字，其次匹配 'MB' 前的数字，最后默认字母排序。
-    """
-    # 尝试提取 Queue Depth (例如 16QD)
-    match_qd = re.search(r'(\d+)QD', case_name)
-    if match_qd:
-        return int(match_qd.group(1))
-    
-    # 尝试提取 Size (例如 4MB)
-    match_mb = re.search(r'(\d+)MB', case_name)
-    if match_mb:
-        return int(match_mb.group(1))
-        
-    return case_name
-
-def plot_and_save_results(scenario_name: str, results: Dict[str, Any]):
-    """
-    绘制结果并保存为 PNG。
-    改为双Y轴模式：左轴 Bandwidth，右轴 Latency。
-    """
-    if not os.path.exists(PLOTS_SAVE_DIR):
-        os.makedirs(PLOTS_SAVE_DIR)
-
-    # 1. 数据准备与排序
-    valid_data = []
-    for case_name, data in results.items():
-        if "Error" in data:
-            continue
-        valid_data.append({
-            "name": case_name,
-            "sort_key": extract_sort_key(case_name), # 依赖外部定义的 extract_sort_key 函数
-            "bw_gb": data.get("Bandwidth", 0) / (1024**3), # 转换为 GB/s
-            "lat": data.get("Avg_Response_Time", 0)
-        })
-
-    if not valid_data:
-        print(f"[!] No valid data to plot for {scenario_name}.")
-        return
-
-    # 按提取的数字键排序
-    valid_data.sort(key=lambda x: x["sort_key"])
-
-    # 提取轴数据
-    x_labels = [str(item["sort_key"]) for item in valid_data]
-    # 如果提取出的 key 区分度不够，回退到使用完整 case name
-    if len(set(x_labels)) < len(x_labels):
-         x_labels = [item["name"] for item in valid_data]
-
-    y_bw = [item["bw_gb"] for item in valid_data]
-    y_lat = [item["lat"] for item in valid_data]
-
-    # 2. 绘图 (双Y轴)
-    fig, ax1 = plt.subplots(figsize=(12, 7))
-
-    # --- 左轴: Bandwidth ---
-    color_bw = 'tab:blue'
-    ax1.set_xlabel('Scenario Parameter (QD or MB)', fontsize=12)
-    ax1.set_ylabel('Bandwidth (GB/s)', color=color_bw, fontsize=12, fontweight='bold')
-    
-    # 画柱状图或折线图均可，这里用折线+实心点
-    line1 = ax1.plot(x_labels, y_bw, color=color_bw, marker='o', linestyle='-', linewidth=2, label='Bandwidth')
-    ax1.tick_params(axis='y', labelcolor=color_bw)
-    ax1.grid(True, linestyle='--', alpha=0.5) # 只显示主轴的网格，避免混乱
-
-    # --- 右轴: Latency ---
-    ax2 = ax1.twinx()  # 实例化共享X轴的第二个坐标轴
-    color_lat = 'tab:red'
-    ax2.set_ylabel('Avg Latency (us)', color=color_lat, fontsize=12, fontweight='bold')
-    
-    # Latency 通常用虚线或者三角点区分
-    line2 = ax2.plot(x_labels, y_lat, color=color_lat, marker='^', linestyle='--', linewidth=2, label='Latency')
-    ax2.tick_params(axis='y', labelcolor=color_lat)
-
-    # --- 合并图例 ---
-    # 因为有两个轴，直接调用 plt.legend() 只会显示一个，需要手动合并 handle
-    lines = line1 + line2
-    labels = [l.get_label() for l in lines]
-    ax1.legend(lines, labels, loc='upper left', frameon=True, shadow=True)
-
-    # --- 标题与布局 ---
-    plt.title(f"{scenario_name} Performance", fontsize=14)
-    
-    # 防止 X 轴标签太密集重叠
-    fig.autofmt_xdate(rotation=45) 
-    
-    fig.tight_layout()
-
-    # 3. 保存
-    file_path = os.path.join(PLOTS_SAVE_DIR, f"{scenario_name}.png")
-    plt.savefig(file_path, dpi=150) # 稍微提高dpi清晰度
-    plt.close()
-    
-    print(f"[*] Plot saved to: {file_path}")
-
-
-
 # ================= 使用示例 =================
 
 if __name__ == "__main__":
@@ -317,10 +216,10 @@ if __name__ == "__main__":
         print(f"Error: HW Config not found at {HW_CONFIG_PATH}")
         exit(1)
 
-    STREAMING_READ_SCENARIO_256KBREQ = {
+    STREAMING_READ_SCENARIO_128KBREQ = {
         f"seq_read_total_size_{2**(size_log-10)}MB_128kBreq": {
             "Read_Percentage": 100,
-            "Average_Request_Size": 64,  # 1sector = 512B
+            "Average_Request_Size": 256,  # 1sector = 512B
             "Average_No_of_Reqs_in_Queue": min(int(2**(size_log-7)), 512),
             "Total_Requests_To_Generate": 2**size_log//128,
             "Address_Distribution": "STREAMING",
@@ -330,12 +229,12 @@ if __name__ == "__main__":
         for size_log in range(12, 24)
     }
 
-    STREAMING_WRITE_SCENARIO_256KBREQ = {
+    STREAMING_WRITE_SCENARIO_128KBREQ = {
         f"seq_write_total_size_{2**(size_log-10)}MB_128kBreq": {
             "Read_Percentage": 0,
-            "Average_Request_Size": 512,  # 1sector = 512B
+            "Average_Request_Size": 256,  # 1sector = 512B
             "Average_No_of_Reqs_in_Queue": min(int(int(2**(size_log-7))), 512),
-            "Total_Requests_To_Generate": 2**size_log//256,
+            "Total_Requests_To_Generate": 2**size_log//128,
             "Address_Distribution": "STREAMING",
         }
 
@@ -379,24 +278,24 @@ if __name__ == "__main__":
     }
 
     STREAMING_READ_SCENARIO_SCAN_QD = {
-        f"seq_read_total_size_{2**(23-10)}MB_{qd}QD": {
+        f"seq_read_total_size_{2**(18-10)}MB_{qd}QD": {
             "Read_Percentage": 100,
             "Average_Request_Size": 512,  # 1sector = 512B
             "Average_No_of_Reqs_in_Queue": qd,
-            "Total_Requests_To_Generate": 2**23//128,
+            "Total_Requests_To_Generate": 2**18//256,
             "Address_Distribution": "STREAMING",
 
         }
 
-        for qd in range(1, 128, 16)
+        for qd in range(16,17,1)
     }
 
     STREAMING_READ_SCENARIO_SCAN_QD_LOW_RANGE = {
-        f"seq_read_total_size_{2**(23-10)}MB_{qd}QD": {
+        f"seq_read_total_size_{2**(18-10)}MB_{qd}QD": {
             "Read_Percentage": 100,
             "Average_Request_Size": 512,  # 1sector = 512B
             "Average_No_of_Reqs_in_Queue": qd,
-            "Total_Requests_To_Generate": 2**23//128,
+            "Total_Requests_To_Generate": 2**18//256,
             "Address_Distribution": "STREAMING",
 
         }
@@ -405,11 +304,11 @@ if __name__ == "__main__":
     }
 
     STREAMING_READ_SCENARIO_SCAN_QD_SMALL_REQ = {
-        f"seq_read_total_size_{2**(23-10)}MB_{qd}QD_small": {
+        f"seq_read_total_size_{2**(18-10)}MB_{qd}QD_small": {
             "Read_Percentage": 100,
             "Average_Request_Size": 16,  # 1sector = 512B
             "Average_No_of_Reqs_in_Queue": qd,
-            "Total_Requests_To_Generate": 2**23//8,
+            "Total_Requests_To_Generate": 2**18//8,
             "Address_Distribution": "STREAMING",
 
         }
@@ -417,13 +316,6 @@ if __name__ == "__main__":
         for qd in range(1, 512, 16)
     }
 
-
-    scenarios_to_run = [
-        ("STREAMING_READ_SCAN_QD", STREAMING_READ_SCENARIO_SCAN_QD),
-        ("RANDOM_READ_SCENARIO_128KBREQ", RANDOM_READ_SCENARIO_128KBREQ),
-        ("RANDOM_READ_SCENARIO_8KBREQ", RANDOM_READ_SCENARIO_8KBREQ),
-        ("STREAMING_READ_SCENARIO_256KBREQ",STREAMING_READ_SCENARIO_256KBREQ)
-    ]
 
     scenarios = STREAMING_READ_SCENARIO_SCAN_QD
 
@@ -433,18 +325,13 @@ if __name__ == "__main__":
     final_results = automator.run(scenarios)
 
     # 3. 打印最终汇总结果
-    for name, scenario_dict in scenarios_to_run:
-        print(f"\n=== Running Scenario Group: {name} ===")
-        
-        # 1. 运行仿真
-        final_results = automator.run(scenario_dict)
-        # 2. 打印文本摘要
-        print(f"{'Case Name':<40} | {'IOPS':<15} | {'BW (GB/s)':<15}")
-        print("-" * 80)
-        for case, data in final_results.items():
-            if "Error" not in data:
-                bw_gb = data['Bandwidth'] / 1024**3
-                print(f"{case:<40} | {data['IOPS']:<15.2f} | {bw_gb:<15.4f}")
-        
-        # 3. 画图并保存
-        plot_and_save_results(name, final_results)
+    print("\n========= Final Summary =========")
+    print(f"{'Case Name':<20} | {'IOPS':<15} | {'Bandwidth (GB/s)':<20} | {'Latency (us)':<15}")
+    print("-" * 80)
+    for name, data in final_results.items():
+        if "Error" in data:
+            print(f"{name:<20} | ERROR: {data['Error']}")
+        else:
+            # Bandwidth 原始单位通常是 bytes/sec，这里转换为 GB/s 用于展示
+            bw_gb = data['Bandwidth'] / 1024 / 1024 / 1024
+            print(f"{name:<20} | {data['IOPS']:<15.2f} | {bw_gb:<20.4f} | {data['Avg_Response_Time']:<15.2f}")

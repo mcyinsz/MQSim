@@ -13,7 +13,7 @@
 			<Plane_IDs>0,1</Plane_IDs>
 			
 			<!-- 预填充：模拟SSD已经使用了50%的状态 -->
-			<Initial_Occupancy_Percentage>50</Initial_Occupancy_Percentage>
+			<Initial_Occupancy_Percentage>10</Initial_Occupancy_Percentage>
 			
 			<!-- Trace文件路径 -->
 			<File_Path>HBF_workspace/sequential_trace.trace</File_Path>

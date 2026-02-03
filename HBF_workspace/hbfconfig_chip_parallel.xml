@@ -32,7 +32,7 @@
 		<!-- 增大 CMT 以适应大量 Mapping 表 -->
 		<CMT_Capacity>524288</CMT_Capacity>
 		<CMT_Sharing_Mode>SHARED</CMT_Sharing_Mode>
-		<Plane_Allocation_Scheme>CWPD</Plane_Allocation_Scheme>
+		<Plane_Allocation_Scheme>CWDP</Plane_Allocation_Scheme>
 		<Transaction_Scheduling_Policy>PRIORITY_OUT_OF_ORDER</Transaction_Scheduling_Policy>
 		<Overprovisioning_Ratio>0.07</Overprovisioning_Ratio>
 		<GC_Exec_Threshold>0.05000</GC_Exec_Threshold>
@@ -40,7 +40,7 @@
 		<Use_Copyback_for_GC>false</Use_Copyback_for_GC>
 		<Preemptible_GC_Enabled>true</Preemptible_GC_Enabled>
 		<GC_Hard_Threshold>0.005000</GC_Hard_Threshold>
-		<Dynamic_Wearleveling_Enabled>true</Dynamic_Wearleveling_Enabled>
+		<Dynamic_Wearleveling_Enabled>false</Dynamic_Wearleveling_Enabled>
 		<Static_Wearleveling_Enabled>true</Static_Wearleveling_Enabled>
 		<Static_Wearleveling_Threshold>100</Static_Wearleveling_Threshold>
 		<Preferred_suspend_erase_time_for_read>700000</Preferred_suspend_erase_time_for_read>
@@ -51,7 +51,7 @@
 		<Flash_Channel_Count>32</Flash_Channel_Count>
 		<Flash_Channel_Width>8</Flash_Channel_Width>
 		<Channel_Transfer_Rate>8000</Channel_Transfer_Rate>
-		<Chip_No_Per_Channel>1</Chip_No_Per_Channel>
+		<Chip_No_Per_Channel>76</Chip_No_Per_Channel>
 		<Flash_Comm_Protocol>NVDDR2</Flash_Comm_Protocol>
 		
 		<Flash_Parameter_Set>
@@ -77,7 +77,7 @@
 			
 			<!-- 结构参数: 8 Die Stack, 76 Planes -->
 			<Die_No_Per_Chip>8</Die_No_Per_Chip>
-			<Plane_No_Per_Die>76</Plane_No_Per_Die>
+			<Plane_No_Per_Die>1</Plane_No_Per_Die>
 			
 			<!-- 调整 Block 和 Page 数量以匹配约 512GB 总容量 -->
 			<Block_No_Per_Plane>8</Block_No_Per_Plane>
