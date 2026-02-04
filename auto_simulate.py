@@ -318,10 +318,10 @@ if __name__ == "__main__":
         exit(1)
 
     STREAMING_READ_SCENARIO_256KBREQ = {
-        f"seq_read_total_size_{2**(size_log-10)}MB_128kBreq": {
+        f"seq_read_total_size_{2**(size_log-10)}MB_256kBreq": {
             "Read_Percentage": 100,
-            "Average_Request_Size": 64,  # 1sector = 512B
-            "Average_No_of_Reqs_in_Queue": min(int(2**(size_log-7)), 512),
+            "Average_Request_Size": 512,  # 1sector = 512B
+            "Average_No_of_Reqs_in_Queue": min(int(2**(size_log-8)), 64),
             "Total_Requests_To_Generate": 2**size_log//128,
             "Address_Distribution": "STREAMING",
 
@@ -334,7 +334,7 @@ if __name__ == "__main__":
         f"seq_write_total_size_{2**(size_log-10)}MB_128kBreq": {
             "Read_Percentage": 0,
             "Average_Request_Size": 512,  # 1sector = 512B
-            "Average_No_of_Reqs_in_Queue": min(int(int(2**(size_log-7))), 512),
+            "Average_No_of_Reqs_in_Queue": min(int(int(2**(size_log-8))), 512),
             "Total_Requests_To_Generate": 2**size_log//256,
             "Address_Distribution": "STREAMING",
         }
@@ -354,12 +354,12 @@ if __name__ == "__main__":
         for size_log in range(12, 24)
     }
 
-    RANDOM_READ_SCENARIO_128KBREQ = {
-        f"rand_read_total_size_{2**(size_log-10)}MB_128kBreq": {
+    RANDOM_READ_SCENARIO_256KBREQ = {
+        f"rand_read_total_size_{2**(size_log-10)}MB_256kBreq": {
             "Read_Percentage": 100,
-            "Average_Request_Size": 256,  # 1sector = 512B
-            "Average_No_of_Reqs_in_Queue": min(int(2**(size_log-7)), 512),
-            "Total_Requests_To_Generate": 2**size_log//128,
+            "Average_Request_Size": 512,  # 1sector = 512B
+            "Average_No_of_Reqs_in_Queue": min(int(2**(size_log-8)), 64),
+            "Total_Requests_To_Generate": 2**size_log//256,
             "Address_Distribution": "RANDOM_UNIFORM",
         }
 
@@ -370,7 +370,7 @@ if __name__ == "__main__":
         f"rand_read_total_size_{2**(size_log-10)}MB_8kBreq": {
             "Read_Percentage": 100,
             "Average_Request_Size": 16,  # 1sector = 512B
-            "Average_No_of_Reqs_in_Queue": min(int(2**(size_log-3)), 1024),
+            "Average_No_of_Reqs_in_Queue": min(int(2**(size_log-3)), 64*64),
             "Total_Requests_To_Generate": 2**size_log//8,
             "Address_Distribution": "RANDOM_UNIFORM", 
         }
@@ -420,7 +420,7 @@ if __name__ == "__main__":
 
     scenarios_to_run = [
         ("STREAMING_READ_SCAN_QD", STREAMING_READ_SCENARIO_SCAN_QD),
-        ("RANDOM_READ_SCENARIO_128KBREQ", RANDOM_READ_SCENARIO_128KBREQ),
+        ("RANDOM_READ_SCENARIO_256KBREQ", RANDOM_READ_SCENARIO_256KBREQ),
         ("RANDOM_READ_SCENARIO_8KBREQ", RANDOM_READ_SCENARIO_8KBREQ),
         ("STREAMING_READ_SCENARIO_256KBREQ",STREAMING_READ_SCENARIO_256KBREQ)
     ]
