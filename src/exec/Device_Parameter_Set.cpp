@@ -622,7 +622,10 @@ void Device_Parameter_Set::XML_deserialize(rapidxml::xml_node<> *node)
 				std::transform(val.begin(), val.end(), val.begin(), ::toupper);
 				if (strcmp(val.c_str(), "NVDDR2") == 0) {
 					Flash_Comm_Protocol = SSD_Components::ONFI_Protocol::NVDDR2;
-				} else {
+				} else if (strcmp(val.c_str(), "HBF") == 0) {
+					Flash_Comm_Protocol = SSD_Components::ONFI_Protocol::HBF;
+				} 
+				else {
 					PRINT_ERROR("Unknown flash communication protocol type specified in the SSD configuration file")
 				}
 			}

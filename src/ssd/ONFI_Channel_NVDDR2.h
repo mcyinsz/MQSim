@@ -15,11 +15,11 @@ namespace SSD_Components
 	{
 	public:
 		ONFI_Channel_NVDDR2(flash_channel_ID_type channelID, unsigned int chipCount, NVM::FlashMemory::Flash_Chip** flashChips, unsigned int ChannelWidth,
-			sim_time_type t_RC = 0, sim_time_type t_DSC = 0,
-			sim_time_type t_DBSY = 0, sim_time_type t_CS = 0, sim_time_type t_RR = 0,
-			sim_time_type t_WB = 0, sim_time_type t_WC = 0, sim_time_type t_ADL = 0, sim_time_type t_CALS = 0,
-			sim_time_type t_DQSRE = 0, sim_time_type t_RPRE = 0, sim_time_type t_RHW = 0, sim_time_type t_CCS = 0,
-			sim_time_type t_WPST = 0, sim_time_type t_WPSTH = 0);
+			sim_time_type t_RC = 6, sim_time_type t_DSC = 6,
+			sim_time_type t_DBSY = 500, sim_time_type t_CS = 20, sim_time_type t_RR = 20,
+			sim_time_type t_WB = 100, sim_time_type t_WC = 25, sim_time_type t_ADL = 70, sim_time_type t_CALS = 15,
+			sim_time_type t_DQSRE = 15, sim_time_type t_RPRE = 15, sim_time_type t_RHW = 100, sim_time_type t_CCS = 300,
+			sim_time_type t_WPST = 6, sim_time_type t_WPSTH = 15);
 
 
 		sim_time_type TwoUnitDataOutTime; //The DDR delay for two-unit device data out

@@ -52,7 +52,7 @@
 		<Flash_Channel_Width>8</Flash_Channel_Width>
 		<Channel_Transfer_Rate>8000</Channel_Transfer_Rate>
 		<Chip_No_Per_Channel>76</Chip_No_Per_Channel>
-		<Flash_Comm_Protocol>NVDDR2</Flash_Comm_Protocol>
+		<Flash_Comm_Protocol>HBF</Flash_Comm_Protocol>
 		
 		<Flash_Parameter_Set>
 			<!-- 使用 SLC 模式以匹配给定的高性能延迟参数 -->

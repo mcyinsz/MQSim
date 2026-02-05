@@ -5,7 +5,7 @@
 #include<string>
 #include<iostream>
 
-typedef uint64_t sim_time_type;
+typedef double sim_time_type;
 typedef uint16_t stream_id_type;
 typedef sim_time_type data_timestamp_type;
 

@@ -6,7 +6,7 @@
 
 namespace SSD_Components
 {
-	enum class ONFI_Protocol {NVDDR2};
+	enum class ONFI_Protocol {NVDDR2, HBF};
 	class ONFI_Channel_Base : public NVM_Channel_Base
 	{
 	public:

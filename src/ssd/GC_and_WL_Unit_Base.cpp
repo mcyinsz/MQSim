@@ -107,9 +107,10 @@ namespace SSD_Components
 			{
 				PPA_type ppa;
 				MPPN_type mppa;
+				sim_time_type timestamp; 
 				page_status_type page_status_bitmap;
 				if (pbke->Blocks[transaction->Address.BlockID].Holds_mapping_data) {
-					_my_instance->address_mapping_unit->Get_translation_mapping_info_for_gc(transaction->Stream_id, (MVPN_type)transaction->LPA, mppa, page_status_bitmap);
+					_my_instance->address_mapping_unit->Get_translation_mapping_info_for_gc(transaction->Stream_id, (MVPN_type)transaction->LPA, mppa, timestamp);
 					//There has been no write on the page since GC start, and it is still valid
 					if (mppa == transaction->PPA) {
 						_my_instance->tsu->Prepare_for_transaction_submit();
