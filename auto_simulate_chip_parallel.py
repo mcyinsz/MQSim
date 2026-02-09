@@ -13,7 +13,7 @@ import re
 # MQSim 可执行文件的路径 (请修改为你的实际路径)
 MQSIM_EXEC_PATH = "./MQSim" 
 # 硬件配置文件的路径 (请修改为你的实际路径)
-HW_CONFIG_PATH = "./HBF_workspace/hbfconfig_chip_parallel.xml" 
+HW_CONFIG_PATH = "./HBF_workspace/hbfconfig_new_single_channel.xml" 
 # 临时工作目录的根路径，用于存放并行跑的中间文件
 TEMP_WORKSPACE_ROOT = "./temp_sim_workspace/temp_symthesis_chip_parallel_sim_workspace"
 PLOTS_SAVE_DIR = "./workload_plots"
@@ -25,8 +25,8 @@ def generate_workload_xml(filepath: str, params: Dict[str, Any]):
     如果 params 中缺少某些字段，则使用下面的默认值。
     """
     # 默认的长 ID 列表，直接复制自你的示例
-    default_chip_ids = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75"
-    default_channel_ids = "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31" #"0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31"
+    default_chip_ids = ",".join([str(i) for i in range(48)]) #"0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23"
+    default_channel_ids = "0" #"0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31"
     default_die_ids = "0"
     default_plane_ids = "0"
 
@@ -392,6 +392,19 @@ if __name__ == "__main__":
         for qd in range(1, 128, 16)
     }
 
+    STREAMING_READ_SCENARIO_SCAN_QD_8KB = {
+        f"seq_read_total_size_{2**(14-10)}MB_{qd}QD": {
+            "Read_Percentage": 100,
+            "Average_Request_Size": 16,  # 1sector = 512B
+            "Average_No_of_Reqs_in_Queue": qd,
+            "Total_Requests_To_Generate": 2**14//8,
+            "Address_Distribution": "STREAMING",
+
+        }
+
+        for qd in range(1, 64, 2)
+    }
+
     STREAMING_READ_SCENARIO_SCAN_QD_LOW_RANGE = {
         f"seq_read_total_size_{2**(23-10)}MB_{qd}QD": {
             "Read_Percentage": 100,
@@ -420,10 +433,11 @@ if __name__ == "__main__":
 
 
     scenarios_to_run = [
-        ("STREAMING_READ_SCAN_QD", STREAMING_READ_SCENARIO_SCAN_QD),
-        ("RANDOM_READ_SCENARIO_256KBREQ", RANDOM_READ_SCENARIO_256KBREQ),
-        ("RANDOM_READ_SCENARIO_8KBREQ", RANDOM_READ_SCENARIO_8KBREQ),
-        ("STREAMING_READ_SCENARIO_256KBREQ",STREAMING_READ_SCENARIO_256KBREQ)
+        # ("STREAMING_READ_SCAN_QD", STREAMING_READ_SCENARIO_SCAN_QD),
+        ("STREAMING_READ_SCAN_QD_8kB", STREAMING_READ_SCENARIO_SCAN_QD_8KB),
+        # ("RANDOM_READ_SCENARIO_256KBREQ", RANDOM_READ_SCENARIO_256KBREQ),
+        # ("RANDOM_READ_SCENARIO_8KBREQ", RANDOM_READ_SCENARIO_8KBREQ),
+        # ("STREAMING_READ_SCENARIO_256KBREQ",STREAMING_READ_SCENARIO_256KBREQ)
     ]
 
     scenarios = STREAMING_READ_SCENARIO_SCAN_QD
