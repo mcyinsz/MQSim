@@ -423,12 +423,53 @@ namespace SSD_Components {
 						chipBKE->Status = ChipStatus::WAIT_FOR_DATA_OUT;
 					}
 				}
-				if (chipBKE->Status == ChipStatus::IDLE) {
-					if (dieBKE->Suspended) {
-						send_resume_command_to_chip(targetChip, chipBKE);
+				// if (chipBKE->Status == ChipStatus::IDLE) {
+				// 	if (dieBKE->Suspended) {
+				// 		send_resume_command_to_chip(targetChip, chipBKE);
+				// 	}
+				// }
+				// targetChannel->SetStatus(BusChannelStatus::IDLE, targetChip);
+				// break;
+				{
+					// // OPTIMIZATION: If chip is IDLE, immediately notify TSU for next command
+					// bool commandIssued = false;
+					// if (chipBKE->Status == ChipStatus::IDLE) {
+					// 	if (dieBKE->Suspended) {
+					// 		send_resume_command_to_chip(targetChip, chipBKE);
+					// 	} else {
+					// 		// Notify TSU that this chip can accept next command
+					// 		broadcastChipReadyForNextCommandSignal(targetChip);
+							
+					// 		// Check if TSU issued a command (chip status changed)
+					// 		if (chipBKE->Status != ChipStatus::IDLE) {
+					// 			commandIssued = true;
+					// 		}
+					// 	}
+					// }
+					
+					// // OPTIMIZATION: Only release channel if no new command was issued
+					// if (commandIssued) {
+					// 	targetChannel->SetStatus(BusChannelStatus::BUSY, targetChip);
+					// } else {
+					// 	targetChannel->SetStatus(BusChannelStatus::IDLE, targetChip);
+					// }
+	
+					// 1. 关键：必须先释放总线，否则 TSU 下发指令时会报错 "Channel Busy"
+					targetChannel->SetStatus(BusChannelStatus::IDLE, targetChip);
+					// 2. 尝试立即执行流水线操作 (Pipeline Optimization)
+					if (chipBKE->Status == ChipStatus::IDLE) {
+						if (dieBKE->Suspended) {
+							send_resume_command_to_chip(targetChip, chipBKE);
+						} else {
+							// 通知 TSU：芯片已就绪，请立即利用这个空闲的 Channel
+							broadcastChipReadyForNextCommandSignal(targetChip);
+						}
+					}
+
+					if (targetChannel->GetStatus() == BusChannelStatus::BUSY) {
+						return;
 					}
 				}
-				targetChannel->SetStatus(BusChannelStatus::IDLE, targetChip);
 				break;
 			default:
 				PRINT_ERROR("Unknown simulation event specified for NVM_PHY_ONFI_NVDDR2!")

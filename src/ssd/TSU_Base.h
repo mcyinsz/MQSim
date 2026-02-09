@@ -89,6 +89,11 @@ protected:
 	static void handle_transaction_serviced_signal_from_PHY(NVM_Transaction_Flash *transaction);
 	static void handle_channel_idle_signal(flash_channel_ID_type);
 	static void handle_chip_idle_signal(NVM::FlashMemory::Flash_Chip *chip);
+
+	// --- [新增开始] ---
+	static void handle_chip_ready_for_next_command(NVM::FlashMemory::Flash_Chip* chip);
+	// --- [新增结束] ---
+
 	int opened_scheduling_reqs;
 	void process_chip_requests(NVM::FlashMemory::Flash_Chip* chip)
 	{

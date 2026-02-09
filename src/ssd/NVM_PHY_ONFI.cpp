@@ -47,4 +47,17 @@ namespace SSD_Components {
 			(*it)(chip);
 		}
 	}
+
+	// 在 src/ssd/NVM_PHY_ONFI_NVDDR2.cpp 中
+	void NVM_PHY_ONFI::ConnectToChipReadyForNextCommandSignal(ChipReadyForNextCommandHandlerType function)
+	{
+		chipReadyForNextCommandHandlers.push_back(function);
+	}
+	void NVM_PHY_ONFI::broadcastChipReadyForNextCommandSignal(NVM::FlashMemory::Flash_Chip* chip)
+	{
+		for (std::vector<ChipReadyForNextCommandHandlerType>::iterator it = chipReadyForNextCommandHandlers.begin();
+			it != chipReadyForNextCommandHandlers.end(); it++) {
+			(*it)(chip);
+		}
+	}
 }

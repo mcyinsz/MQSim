@@ -37,6 +37,11 @@ namespace SSD_Components
 		_NVMController->ConnectToTransactionServicedSignal(handle_transaction_serviced_signal_from_PHY);
 		_NVMController->ConnectToChannelIdleSignal(handle_channel_idle_signal);
 		_NVMController->ConnectToChipIdleSignal(handle_chip_idle_signal);
+
+		// --- [新增开始] ---
+        // Optimization: Register for immediate next command opportunity
+        _NVMController->ConnectToChipReadyForNextCommandSignal(handle_chip_ready_for_next_command);
+        // --- [新增结束] ---
 	}
 
 	void TSU_Base::handle_transaction_serviced_signal_from_PHY(NVM_Transaction_Flash* transaction)
@@ -63,6 +68,30 @@ namespace SSD_Components
 		if (_my_instance->_NVMController->Get_channel_status(chip->ChannelID) == BusChannelStatus::IDLE) {
 			_my_instance->process_chip_requests(chip);
 		}
+	}
+
+	// Optimization: issue command immediately after the data transfer
+	void TSU_Base::handle_chip_ready_for_next_command(NVM::FlashMemory::Flash_Chip* chip)
+	{
+		// This function is called immediately after a chip finishes data transfer
+		// We can issue next read command even if channel is busy (for read commands)
+		
+		// Check if chip is still IDLE (TSU might have already issued a command)
+		if (_my_instance->_NVMController->GetChipStatus(chip) != ChipStatus::IDLE) {
+			return;
+		}
+		
+		// Try to service read transaction immediately
+		if (_my_instance->service_read_transaction(chip)) {
+			return;
+		}
+		
+		// No read command, try write/erase
+		if (_my_instance->service_write_transaction(chip)) {
+			return;
+		}
+		
+		_my_instance->service_erase_transaction(chip);
 	}
 
 	void TSU_Base::Report_results_in_XML(std::string name_prefix, Utils::XmlWriter& xmlwriter)

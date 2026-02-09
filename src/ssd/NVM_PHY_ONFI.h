@@ -41,6 +41,14 @@ namespace SSD_Components
 		void ConnectToChannelIdleSignal(ChannelIdleHandlerType);
 		typedef void(*ChipIdleHandlerType) (NVM::FlashMemory::Flash_Chip*);
 		void ConnectToChipIdleSignal(ChipIdleHandlerType);
+
+
+		// --- [新增开始] ---
+        // Optimization: Signal triggered when a chip is ready for next command immediately after data transfer
+        typedef void(*ChipReadyForNextCommandHandlerType) (NVM::FlashMemory::Flash_Chip* chip);
+        void ConnectToChipReadyForNextCommandSignal(ChipReadyForNextCommandHandlerType);
+        // --- [新增结束] ---	
+
 	protected:
 		unsigned int channel_count;
 		unsigned int chip_no_per_channel;
@@ -52,6 +60,11 @@ namespace SSD_Components
 		void broadcastChannelIdleSignal(flash_channel_ID_type);
 		std::vector<ChipIdleHandlerType> connectedChipIdleHandlers;
 		void broadcastChipIdleSignal(NVM::FlashMemory::Flash_Chip* chip);
+
+		// --- [新增开始] ---
+		std::vector<ChipReadyForNextCommandHandlerType> chipReadyForNextCommandHandlers;
+		void broadcastChipReadyForNextCommandSignal(NVM::FlashMemory::Flash_Chip* chip);
+		// --- [新增结束] ---
 	};
 }
 
